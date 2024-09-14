@@ -1,0 +1,51 @@
+version: "3"
+services:
+  front-end:
+    container_name: front-end
+    build: "./front-end"
+    ports:
+      - "443:443"
+    networks:
+      - local
+    restart: on-failure
+    depends_on:
+      - back-end
+  back-end:
+    container_name: back-end
+    build: "./back-end"
+    restart: on-failure
+    ports:
+      - "8443:8443"
+    depends_on:
+      - db
+    networks:
+      - local
+    env_file:
+      - ./back-end/.env
+  db:
+    container_name: postgres_container
+    image: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: libftPong
+    ports:
+      - "5432:5432"
+    networks:
+      - local
+  pgadmin:
+    container_name: pgadmin4_container
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@admin.com
+      PGADMIN_DEFAULT_PASSWORD: root
+    ports:
+      - "5050:80"
+    networks:
+      - local
+
+networks:
+  local:
+    driver: bridge
